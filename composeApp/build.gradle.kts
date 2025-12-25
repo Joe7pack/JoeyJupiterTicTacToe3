@@ -31,9 +31,7 @@ kotlin {
             implementation(libs.androidx.activity.compose)
         }
         commonMain.dependencies {
-
             implementation(compose.components.resources)
-
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
@@ -56,13 +54,15 @@ android {
     buildFeatures {
         compose = true
     }
-
     defaultConfig {
         applicationId = "com.guzzardo.joeyjupitertictactoe3"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
+        vectorDrawables {
+            useSupportLibrary = true
+        }
     }
     packaging {
         resources {
