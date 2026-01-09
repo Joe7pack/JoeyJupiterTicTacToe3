@@ -40,6 +40,11 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
             implementation(projects.shared)
+            //implementation(libs.androidx.lifecycle.viewmodel.compose)
+            //implementation(libs.androidx.lifecycle.viewmodel)
+            //implementation(libs.androidx.lifecycle.viewmodel.compose)
+            // Use the latest stable version instead of 2.8.0 if a newer one is available
+            implementation(libs.lifecycle.viewmodel.compose)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -53,10 +58,11 @@ android {
 
     buildFeatures {
         compose = true
+        viewBinding = true
     }
     defaultConfig {
         applicationId = "com.guzzardo.joeyjupitertictactoe3"
-        minSdk = libs.versions.android.minSdk.get().toInt()
+        minSdkVersion(libs.versions.android.minSdk.get().toInt())
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
@@ -78,6 +84,7 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+    buildToolsVersion = "36.1.0"
 }
 
 dependencies {
@@ -86,6 +93,9 @@ dependencies {
     implementation(libs.androidx.material.icons.core)
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.material3)
+
+    implementation(libs.androidx.activity.compose)
+
     implementation(libs.androidx.foundation)
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.tooling.preview)
@@ -93,10 +103,11 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.androidx.adaptive)
-    implementation(libs.androidx.activity.compose.v1110)
-    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    //implementation(libs.androidx.activity.compose.v1110)
+    //implementation(libs.androidx.lifecycle.viewmodel.compose)
+    //implementation(libs.androidx.lifecycle.viewmodel.compose.viewModel)
+    //implementation(libs.androidx.lifecycle.viewmodel.compose) // Use the latest version
     implementation(libs.androidx.runtime.livedata)
     implementation(libs.androidx.runtime.rxjava2)
-
 }
 

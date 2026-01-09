@@ -25,6 +25,7 @@ dependencyResolutionManagement {
             }
         }
         mavenCentral()
+        maven("maven.pkg.jetbrains.space")
     }
 }
 

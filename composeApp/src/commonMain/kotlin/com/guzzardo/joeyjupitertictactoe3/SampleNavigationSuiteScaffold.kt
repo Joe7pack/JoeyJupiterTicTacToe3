@@ -16,6 +16,10 @@ package com.guzzardo.joeyjupitertictactoe3
  * limitations under the License.
  */
 
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
@@ -36,6 +40,17 @@ import org.jetbrains.compose.resources.StringArrayResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
+import androidx.compose.material3.Button
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
+import org.jetbrains.compose.resources.InternalResourceApi
+import org.jetbrains.compose.resources.getStringArray
+
 /* enum class AppDestinations(
     @StringRes val label: String,
     val icon: ImageVector,
@@ -49,7 +64,8 @@ import org.jetbrains.compose.resources.stringResource
 }
  */
 
-var planetList = Res.array.planets_array
+
+var planetList = Res.array.planets_array.key
 
 @Composable
 fun Icons() {
@@ -60,89 +76,216 @@ fun Icons() {
 }
 
 // replace AppDestinations.entries.forEach with planetList.forEach
+/*
 @Composable
 fun planets(): StringArrayResource /* stringArrayResource List<String> */ {
     planetList  = Res.array.planets_array
     return planetList
+} */
+
+// 1. Define a custom Saver for StringArrayResource
+@OptIn(InternalResourceApi::class)
+val StringArrayResourceSaver = Saver<StringArrayResource, String>(
+    save = { it.toString() //resource ->
+        // When saving, convert the resource object into its integer ID
+        //Res. .id
+        //Res.array.planets_array
+        //planetList2.
+    },
+    restore = { id ->
+        // When restoring, create a new StringArrayResource object from the saved ID
+        StringArrayResource(
+            TODO(),
+            key = TODO(),
+            items = TODO()
+        )
+    }
+)
+
+// 2. Use the saver with rememberSaveable()
+//@OptIn(InternalResourceApi::class)
+@Composable
+fun MyScreen2() {
+    val planetList = Res.array.planets_array
+    // Example resource ID (replace with your actual R.array.my_array_name)
+    //val defaultResourceId = Res.array.planets_array //R.array.my_array_name
+
+    var selectedResource by remember() {
+        //mutableStateOf(StringArrayResource(defaultResourceId))
+        mutableStateOf(planetList)
+    }
+
+    // You can now use selectedResource safely across process deaths
+    //val arrayValues = getStringArray(resource = selectedResource)
+    // ... UI code using arrayValues ...
 }
+
+@Composable
+fun TestFun(menuString: String) {
+
+    Row() {
+        //Text(text = menuString)
+        KmpCanvasExample()
+    }
+
+    Row() {
+        //SampleNavigationSuiteScaffoldParts()
+        MyScreen()
+    }
+}
+
+@Composable
+fun ClickableRowExample(menuString: String) {
+    // 1. Define a mutable state for the text
+    var displayedText by remember { mutableStateOf(menuString) }
+
+    // 2. Create the Row and apply the clickable modifier
+    Row(
+        modifier = Modifier
+            .clickable(onClick = {
+
+                // Inside the onClick lambda, update the state variable
+                displayedText = "The text has been modified!"
+                //KmpCanvasExample()
+            })
+    ) {
+        // 3. Use the state variable in the Text composable
+        Text(text = displayedText)
+    }
+}
+
+@Composable
+fun KmpCanvasExample() {
+    Canvas(modifier = Modifier.fillMaxSize()) {
+        // Draw a red line from the top-left to the bottom-right corner
+        drawLine(
+            color = Color.Red,
+            start = Offset(x = 0f, y = 0f),
+            end = Offset(x = size.width, y = size.height),
+            strokeWidth = 4f
+        )
+
+        // Draw a blue rectangle in the center of the canvas
+        val rectSize = Size(200f, 100f)
+        val topLeftOffset = Offset(
+            x = (size.width - rectSize.width) / 2f,
+            y = (size.height - rectSize.height) / 2f
+        )
+        drawRect(
+            color = Color.Blue,
+            topLeft = topLeftOffset,
+            size = rectSize
+        )
+    }
+}
+
 
 @Composable
 fun SampleNavigationSuiteScaffoldParts() {
     // [START android_compose_adaptivelayouts_sample_navigation_suite_scaffold_remember]
     //var currentDestination by rememberSaveable { mutableStateOf(AppDestinations.HOME) }
-    var currentDestination by rememberSaveable { mutableStateOf(planetList) }
+    //var currentDestination by rememberSaveable { mutableStateOf(planetList) }
     // [END android_compose_adaptivelayouts_sample_navigation_suite_scaffold_remember]
 
     // [START android_compose_adaptivelayouts_sample_navigation_suite_scaffold_items]
+
+    /*
     NavigationSuiteScaffold(
         navigationSuiteItems = {
-            //AppDestinations.entries.forEach {
-            arrayOf(planetList).forEach {  planet ->
-                item(
-                    icon = {
-                        Icon(
-                             painter = painterResource(Res.drawable.homeicon),
-                             contentDescription = stringResource( Res.string.shopping)
-                        )
-                    },
-                    label = { Text(stringResource(Res.string.shopping)) },
-                    selected = true, //currentDestination,
-                    onClick = {currentDestination}
-                )
+                //AppDestinations.entries.forEach {
+                arrayOf(planetList).forEach { planet ->
+                    item(
+                        icon = {
+                            Icon(
+                                painter = painterResource(Res.drawable.homeicon),
+                                contentDescription = stringResource(Res.string.shopping)
+                            )
+                        },
+                        label = { Text(stringResource(Res.string.shopping)) },
+                        selected = true, //currentDestination,
+                        onClick = { currentDestination }
+                    )
+                }
             }
+        ) {
+            // TODO: Destination content.
         }
-    ) {
-        // TODO: Destination content.
-    }
-    // [END android_compose_adaptivelayouts_sample_navigation_suite_scaffold_items]
 
-    // [START android_compose_adaptivelayouts_sample_navigation_suite_scaffold_content]
-    NavigationSuiteScaffold(
-        navigationSuiteItems = { /*...*/ }
-    ) {
-        HomeDestination()
-        // Destination content.
-        /*
+     */
+
+
+        // [END android_compose_adaptivelayouts_sample_navigation_suite_scaffold_items]
+
+        // [START android_compose_adaptivelayouts_sample_navigation_suite_scaffold_content]
+        NavigationSuiteScaffold(
+            navigationSuiteItems = { /*...*/ }
+        ) {
+            HomeDestination()
+            // Destination content.
+            /*
         when (currentDestination) {
             AppDestinations.HOME -> HomeDestination()
             AppDestinations.FAVORITES -> FavoritesDestination()
             AppDestinations.SHOPPING -> ShoppingDestination()
             AppDestinations.PROFILE -> ProfileDestination()
         } */
-    }
-    // [END android_compose_adaptivelayouts_sample_navigation_suite_scaffold_content]
-}
-
-
-@Composable
-fun SampleNavigationSuiteScaffoldCustomType() {
-    // [START android_compose_adaptivelayouts_sample_navigation_suite_scaffold_layout_type]
-    val adaptiveInfo = currentWindowAdaptiveInfo()
-    val customNavSuiteType = with(adaptiveInfo) {
-        if (windowSizeClass.isWidthAtLeastBreakpoint(WIDTH_DP_EXPANDED_LOWER_BOUND)) {
-            NavigationSuiteType.NavigationDrawer
-        } else {
-            NavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(adaptiveInfo)
         }
+        // [END android_compose_adaptivelayouts_sample_navigation_suite_scaffold_content]
     }
 
-    NavigationSuiteScaffold(
-        navigationSuiteItems = { /* ... */ },
-        layoutType = customNavSuiteType,
-    ) {
-        // Content...
+    @Composable
+    fun HomeDestinationX() {
+        TODO("Not yet implemented")
     }
-    // [END android_compose_adaptivelayouts_sample_navigation_suite_scaffold_layout_type]
+
+
+    @Composable
+    fun SampleNavigationSuiteScaffoldCustomType() {
+        // [START android_compose_adaptivelayouts_sample_navigation_suite_scaffold_layout_type]
+        val adaptiveInfo = currentWindowAdaptiveInfo()
+        val customNavSuiteType = with(adaptiveInfo) {
+            if (windowSizeClass.isWidthAtLeastBreakpoint(WIDTH_DP_EXPANDED_LOWER_BOUND)) {
+                NavigationSuiteType.NavigationDrawer
+            } else {
+                NavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(adaptiveInfo)
+            }
+        }
+
+        NavigationSuiteScaffold(
+            navigationSuiteItems = { /* ... */ },
+            layoutType = customNavSuiteType,
+        ) {
+            // Content...
+        }
+        // [END android_compose_adaptivelayouts_sample_navigation_suite_scaffold_layout_type]
+    }
+
+    @Composable
+    fun HomeDestination() {
+        Button(onClick = { /* Do something when clicked */ }) {
+            Icon(
+                painter = painterResource(Res.drawable.homeicon),
+                contentDescription = stringResource(Res.string.shopping)
+            )
+
+
+            // Add a space between the icon and the text
+
+            Text("Add Item")
+        }
+
+
+    }
+
+@Composable
+fun FavoritesDestination() {
 }
 
 @Composable
-fun HomeDestination() {}
+fun ShoppingDestination() {
+}
 
 @Composable
-fun FavoritesDestination() {}
+fun ProfileDestination() {
+}
 
-@Composable
-fun ShoppingDestination() {}
-
-@Composable
-fun ProfileDestination() {}
